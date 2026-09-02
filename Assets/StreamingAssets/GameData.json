@@ -1,0 +1,576 @@
+/*
+  Баланс и контент Game Dev Studio.
+  Меняйте числа здесь — перезапустите Play, пересобирать код не нужно.
+  Можно писать // комментарии: лоадер их вырежет.
+*/
+{
+  "studio": {
+    "startingMoney": 2400,
+    "startingDeskSlots": 3,
+    "roomTilesX": 14,
+    "roomTilesY": 9,
+    "hireMarketSize": 4,
+    "hireRefreshCost": 50,
+    "maxActiveProjects": 4,
+    "seed": 7,
+    "producerUnlockAfterReleases": 1,
+    "extraDeskSlotPrice": 420,
+    "maxDeskSlots": 6
+  },
+  "time": {
+    "minutesPerTick": 60,
+    "workStartHour": 10,
+    "workEndHour": 18,
+    "realSecondsPerTick": 0.55
+  },
+  "productivity": {
+    "rampUpDays": 1.5,
+    "peakDays": 5,
+    "burnoutDays": 6,
+    "startMultiplier": 0.35,
+    "peakMultiplier": 1.2,
+    "burnoutMultiplier": 0.45
+  },
+  "needs": {
+    "maxValue": 100,
+    "energyDecayPerWorkHour": 8,
+    "moodDecayPerWorkHour": 8,
+    "energyRestorePerIdleHour": 8,
+    "moodRestorePerIdleHour": 2,
+    "lowEnergyThreshold": 22,
+    "lowEnergyMultiplier": 0.35,
+    "lowMoodMultiplier": 0.7,
+    "lowBladderMultiplier": 0.55,
+    "seekToiletAt": 78,
+    "seekRestAt": 28,
+    "seekCoffeeAt": 32,
+    "resumeWorkEnergy": 58,
+    "resumeWorkMood": 52,
+    "resumeWorkBladder": 20,
+    "bladderGainPerWorkHour": 14,
+    "bladderGainPerIdleHour": 3,
+    "coffeeMoodRestore": 38,
+    "coffeeEnergyRestore": 10,
+    "toiletBladderRestore": 100,
+    "sofaEnergyPerHour": 20,
+    "idleRestEnergyPerHour": 10,
+    "walkTilesPerSecond": 4
+  },
+  "layout": {
+    "spawnX": 7,
+    "spawnY": 1,
+    "doorX": 7,
+    "doorY": 0,
+    "deskTiles": [
+      { "x": 3, "y": 3 },
+      { "x": 7, "y": 3 },
+      { "x": 11, "y": 3 },
+      { "x": 3, "y": 5 },
+      { "x": 7, "y": 5 },
+      { "x": 11, "y": 5 }
+    ],
+    "facilities": [
+      { "id": "coffee", "displayName": "Кофемашина", "x": 1, "y": 6, "need": "mood" },
+      { "id": "toilet", "displayName": "Туалет", "x": 12, "y": 6, "need": "bladder" },
+      { "id": "sofa", "displayName": "Диван", "x": 1, "y": 1, "need": "energy" }
+    ],
+    "labels": [
+      { "text": "АРТ", "x": 3, "y": 2, "color": "#D48A4C" },
+      { "text": "КОД", "x": 7, "y": 2, "color": "#4C8BD4" },
+      { "text": "ЛАЙВ", "x": 11, "y": 2, "color": "#5ABF8A" }
+    ]
+  },
+  "incidentSettings": {
+    "checkEveryHours": 4,
+    "baseChancePerCheck": 0.26,
+    "pirateHeatPerPirate": 0.22,
+    "pirateHeatDecayPerDay": 0.03
+  },
+  "roles": [
+    { "id": "programmer", "displayName": "Программист", "color": "#4C8BD4", "hireCostBase": 320, "salaryBase": 45, "skillMin": 2, "skillMax": 8, "departmentId": "code" },
+    { "id": "artist", "displayName": "2D-художник", "color": "#D48A4C", "hireCostBase": 300, "salaryBase": 42, "skillMin": 2, "skillMax": 8, "departmentId": "art" },
+    { "id": "artist_3d", "displayName": "3D-артист", "color": "#8B6AD4", "hireCostBase": 520, "salaryBase": 70, "skillMin": 3, "skillMax": 9, "departmentId": "art" },
+    { "id": "texture_artist", "displayName": "Текстурщик", "color": "#C4A35A", "hireCostBase": 400, "salaryBase": 55, "skillMin": 3, "skillMax": 9, "departmentId": "art" },
+    { "id": "animator", "displayName": "Аниматор", "color": "#D46AB0", "hireCostBase": 440, "salaryBase": 58, "skillMin": 3, "skillMax": 9, "departmentId": "art" },
+    { "id": "marketer", "displayName": "Маркетолог", "color": "#5ABF8A", "hireCostBase": 380, "salaryBase": 50, "skillMin": 2, "skillMax": 8, "departmentId": "live" },
+    { "id": "qa", "displayName": "Тестировщик", "color": "#6AA8A8", "hireCostBase": 260, "salaryBase": 36, "skillMin": 2, "skillMax": 7, "departmentId": "qa" },
+    { "id": "sound_designer", "displayName": "Саунд-дизайнер", "color": "#A8D46A", "hireCostBase": 340, "salaryBase": 48, "skillMin": 2, "skillMax": 8, "departmentId": "audio" },
+    { "id": "producer", "displayName": "Продюсер", "color": "#D4C44C", "hireCostBase": 700, "salaryBase": 90, "skillMin": 3, "skillMax": 8, "departmentId": "lead" },
+    { "id": "director", "displayName": "Директор", "color": "#D45A5A", "hireCostBase": 900, "salaryBase": 120, "skillMin": 4, "skillMax": 9, "departmentId": "lead" }
+  ],
+  "engines": [
+    { "id": "hyperkit", "displayName": "HyperKit", "tier": 1, "price": 0, "pirateRisk": 0, "startingOwned": true },
+    { "id": "pixelbox", "displayName": "PixelBox", "tier": 2, "price": 650, "pirateRisk": 0.22, "startingOwned": false },
+    { "id": "studio3d", "displayName": "Studio3D", "tier": 3, "price": 1400, "pirateRisk": 0.28, "startingOwned": false }
+  ],
+  "quality": {
+    "pirateTrackPenalty": 0.12,
+    "pirateEnginePenalty": 0.18,
+    "polishPerWorkHour": 0.025,
+    "maxPolish": 0.22,
+    "marketingLiveBonus": 0.4,
+    "qaBonus": 0.08,
+    "soundBonus": 0.06
+  },
+  "reviewsHigh": [
+    "«Залипательно. Не ожидал такого от гиперказуала.»",
+    "«Полировка чувствуется. Беру в избранное.»",
+    "«Стор сам подхватил. Редкость.»"
+  ],
+  "reviewsMid": [
+    "«Играется. Не шедевр, но на вечер хватает.»",
+    "«Среднячок с проблесками. Реклама не бесит.»",
+    "«Нормально для жанра. Забуду через неделю.»"
+  ],
+  "reviewsLow": [
+    "«Выглядит как спираченный шаблон. Минус звезда.»",
+    "«Баги, кривой баланс, ощущение сырости.»",
+    "«Удалил после туториала. Жалко слот.»"
+  ],
+  "technologies": [
+    { "id": "touch", "displayName": "Тач-управление" },
+    { "id": "ads", "displayName": "Рекламные межстраничные" },
+    { "id": "procedural", "displayName": "Простые префабы уровней" },
+    { "id": "liveops", "displayName": "Живые операции" },
+    { "id": "skeletal", "displayName": "Скелетная анимация" },
+    { "id": "pbr", "displayName": "PBR-материалы" }
+  ],
+  "genres": [
+    {
+      "id": "tap",
+      "displayName": "Тапалка",
+      "tier": 1,
+      "unlockAfterReleases": 0,
+      "engineId": "hyperkit",
+      "techIds": ["touch", "ads"],
+      "basePayout": 720,
+      "dailyRevenue": 28,
+      "revenueDays": 12,
+      "tracks": [
+        { "roleId": "programmer", "points": 14, "minSkill": 2 },
+        { "roleId": "artist", "points": 8, "minSkill": 2 }
+      ]
+    },
+    {
+      "id": "runner",
+      "displayName": "Ранер",
+      "tier": 1,
+      "unlockAfterReleases": 0,
+      "engineId": "hyperkit",
+      "techIds": ["touch", "procedural"],
+      "basePayout": 860,
+      "dailyRevenue": 34,
+      "revenueDays": 14,
+      "tracks": [
+        { "roleId": "programmer", "points": 18, "minSkill": 3 },
+        { "roleId": "artist", "points": 12, "minSkill": 2 }
+      ]
+    },
+    {
+      "id": "match3",
+      "displayName": "Три-в-ряд",
+      "tier": 1,
+      "unlockAfterReleases": 0,
+      "engineId": "hyperkit",
+      "techIds": ["touch", "ads"],
+      "basePayout": 940,
+      "dailyRevenue": 38,
+      "revenueDays": 14,
+      "tracks": [
+        { "roleId": "programmer", "points": 12, "minSkill": 2 },
+        { "roleId": "artist", "points": 20, "minSkill": 3 }
+      ]
+    },
+    {
+      "id": "idle",
+      "displayName": "Айдл-кликер",
+      "tier": 2,
+      "unlockAfterReleases": 2,
+      "engineId": "pixelbox",
+      "techIds": ["touch", "liveops"],
+      "basePayout": 1400,
+      "dailyRevenue": 55,
+      "revenueDays": 18,
+      "tracks": [
+        { "roleId": "programmer", "points": 24, "minSkill": 4 },
+        { "roleId": "artist", "points": 14, "minSkill": 3 },
+        { "roleId": "marketer", "points": 10, "minSkill": 2 }
+      ],
+      "optionalTracks": [
+        { "roleId": "qa", "points": 8, "minSkill": 2 },
+        { "roleId": "sound_designer", "points": 6, "minSkill": 2 }
+      ]
+    },
+    {
+      "id": "platformer",
+      "displayName": "2D-платформер",
+      "tier": 2,
+      "unlockAfterReleases": 3,
+      "engineId": "pixelbox",
+      "techIds": ["skeletal"],
+      "basePayout": 1800,
+      "dailyRevenue": 70,
+      "revenueDays": 20,
+      "tracks": [
+        { "roleId": "programmer", "points": 28, "minSkill": 4 },
+        { "roleId": "artist", "points": 18, "minSkill": 3 },
+        { "roleId": "animator", "points": 16, "minSkill": 3 }
+      ],
+      "optionalTracks": [
+        { "roleId": "qa", "points": 10, "minSkill": 2 },
+        { "roleId": "sound_designer", "points": 8, "minSkill": 2 }
+      ]
+    },
+    {
+      "id": "midcore3d",
+      "displayName": "Мидкор 3D",
+      "tier": 3,
+      "unlockAfterReleases": 5,
+      "engineId": "studio3d",
+      "techIds": ["pbr", "skeletal", "liveops"],
+      "basePayout": 3200,
+      "dailyRevenue": 120,
+      "revenueDays": 24,
+      "tracks": [
+        { "roleId": "programmer", "points": 36, "minSkill": 5 },
+        { "roleId": "artist_3d", "points": 22, "minSkill": 4 },
+        { "roleId": "texture_artist", "points": 16, "minSkill": 4 },
+        { "roleId": "animator", "points": 18, "minSkill": 4 },
+        { "roleId": "marketer", "points": 14, "minSkill": 3 }
+      ],
+      "optionalTracks": [
+        { "roleId": "qa", "points": 14, "minSkill": 3 },
+        { "roleId": "sound_designer", "points": 10, "minSkill": 3 }
+      ]
+    }
+  ],
+  "equipment": [
+    { "id": "pc_basic", "displayName": "Офисный ПК", "price": 220, "roleIds": ["programmer", "artist", "qa", "marketer", "producer", "director"], "productivity": 1 },
+    { "id": "pc_art", "displayName": "Графическая станция", "price": 380, "roleIds": ["artist", "artist_3d", "texture_artist", "animator"], "productivity": 1.15 },
+    { "id": "pc_dev", "displayName": "Dev-машина", "price": 360, "roleIds": ["programmer", "qa"], "productivity": 1.15 },
+    { "id": "pc_audio", "displayName": "Аудио-станция", "price": 340, "roleIds": ["sound_designer"], "productivity": 1.15 }
+  ],
+  "software": [
+    { "id": "codeforge", "displayName": "CodeForge IDE", "price": 180, "roleId": "programmer", "productivity": 1, "pirateRisk": 0.18 },
+    { "id": "pixelstudio", "displayName": "PixelStudio", "price": 160, "roleId": "artist", "productivity": 1, "pirateRisk": 0.2 },
+    { "id": "meshkit", "displayName": "MeshKit", "price": 320, "roleId": "artist_3d", "productivity": 1, "pirateRisk": 0.24 },
+    { "id": "paintlayer", "displayName": "PaintLayer", "price": 240, "roleId": "texture_artist", "productivity": 1, "pirateRisk": 0.2 },
+    { "id": "tweenpro", "displayName": "TweenPro", "price": 260, "roleId": "animator", "productivity": 1, "pirateRisk": 0.22 },
+    { "id": "adpulse", "displayName": "AdPulse", "price": 200, "roleId": "marketer", "productivity": 1, "pirateRisk": 0.16 },
+    { "id": "bugtrack", "displayName": "BugTrack", "price": 140, "roleId": "qa", "productivity": 1, "pirateRisk": 0.12 },
+    { "id": "audiolab", "displayName": "AudioLab", "price": 220, "roleId": "sound_designer", "productivity": 1, "pirateRisk": 0.18 }
+  ],
+  "incidents": [
+    {
+      "id": "director_pivot",
+      "displayName": "Смена курса",
+      "body": "На проекте «{project}» внезапно захотели «другой джем». Часть уже сделанного больше никому не нужна.",
+      "weight": 8,
+      "cooldownDays": 5,
+      "conditions": ["projectInDev", "progressAtLeast:0.25"],
+      "choices": [
+        {
+          "id": "redo",
+          "label": "Переделать",
+          "hint": "−30% прогресса, но конфликт закрыт",
+          "requireMoney": false,
+          "effects": [
+            { "type": "loseProgress", "roleId": "", "percent": 0.3, "points": 0, "amount": 0, "hours": 0, "text": "Выкинули кусок работы и поехали заново." }
+          ]
+        },
+        {
+          "id": "refuse",
+          "label": "Отказать",
+          "hint": "прогресс цел, команда злится",
+          "requireMoney": false,
+          "effects": [
+            { "type": "moodAll", "roleId": "", "percent": 0, "points": 0, "amount": -22, "hours": 0, "text": "Скоуп удержали. В офисе воздух можно резать." }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "wrong_asset",
+      "displayName": "Не те ассеты",
+      "body": "{employee} сдал пак не из «{project}». На превью уже кто-то успел поставить лайк.",
+      "weight": 10,
+      "cooldownDays": 4,
+      "conditions": ["projectInDev", "hasRole:artist"],
+      "choices": [
+        {
+          "id": "redraw",
+          "label": "Перерисовать",
+          "hint": "арт-трек откатится",
+          "requireMoney": false,
+          "effects": [
+            { "type": "loseProgress", "roleId": "artist", "percent": 0.4, "points": 0, "amount": 0, "hours": 0, "text": "Художник идёт перерисовывать. Дедлайн плачет." }
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Оставить как есть",
+          "hint": "экономим время, страдает полировка",
+          "requireMoney": false,
+          "effects": [
+            { "type": "polishHit", "roleId": "", "percent": 0.6, "points": 0, "amount": 0, "hours": 0, "text": "Ассеты вшили. Выглядит «почти то»." },
+            { "type": "moodTarget", "roleId": "", "percent": 0, "points": 0, "amount": -18, "hours": 0, "text": "" }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "store_ban",
+      "displayName": "Бан в сторе",
+      "body": "Модерация стора целится в «{project}». Пиратский след повышает шанс, что снимут именно его.",
+      "weight": 6,
+      "cooldownDays": 6,
+      "conditions": ["hasLiveProject"],
+      "choices": [
+        {
+          "id": "appeal",
+          "label": "Подать апелляцию",
+          "hint": "600$  ·  проект остаётся в сторе",
+          "requireMoney": true,
+          "effects": [
+            { "type": "fine", "roleId": "", "percent": 0, "points": 0, "amount": 600, "hours": 0, "text": "Юристы поговорили со стором. Пока живём." }
+          ]
+        },
+        {
+          "id": "accept",
+          "label": "Смириться",
+          "hint": "лайв снимают, выплаты стоп",
+          "requireMoney": false,
+          "effects": [
+            { "type": "banLiveProject", "roleId": "", "percent": 0, "points": 0, "amount": 0, "hours": 0, "text": "Проект сняли. Ежедневные выплаты остановились." }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "pirate_raid",
+      "displayName": "Проверка лицензий",
+      "body": "Пришли по пиратскому софту и движкам. Можно откупиться, обелить одну лицензию или делать вид, что нас нет дома.",
+      "weight": 12,
+      "cooldownDays": 5,
+      "conditions": ["hasPiratedLicense"],
+      "choices": [
+        {
+          "id": "fine",
+          "label": "Заплатить штраф",
+          "hint": "450$  ·  проверка закрыта",
+          "requireMoney": true,
+          "effects": [
+            { "type": "fine", "roleId": "", "percent": 0, "points": 0, "amount": 450, "hours": 0, "text": "Штраф уплачен. Папка с кряками пока на месте." },
+            { "type": "addPirateHeat", "roleId": "", "percent": 0.08, "points": 0, "amount": 0, "hours": 0, "text": "" }
+          ]
+        },
+        {
+          "id": "legalize",
+          "label": "Купить одну лицензию",
+          "hint": "800$  ·  обеляем один пиратский продукт",
+          "requireMoney": true,
+          "effects": [
+            { "type": "fine", "roleId": "", "percent": 0, "points": 0, "amount": 800, "hours": 0, "text": "" },
+            { "type": "legalizeOne", "roleId": "", "percent": 0, "points": 0, "amount": 0, "hours": 0, "text": "Одна лицензия теперь настоящая. Жара спала." },
+            { "type": "addPirateHeat", "roleId": "", "percent": -0.2, "points": 0, "amount": 0, "hours": 0, "text": "" }
+          ]
+        },
+        {
+          "id": "ignore",
+          "label": "Игнорировать",
+          "hint": "дёшево сейчас, опасно потом",
+          "requireMoney": false,
+          "effects": [
+            { "type": "addPirateHeat", "roleId": "", "percent": 0.28, "points": 0, "amount": 0, "hours": 0, "text": "Проверку отшили. В сторе это запомнят." }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "crunch_crash",
+      "displayName": "Выгорание",
+      "body": "{employee} смотрит в монитор как в бездну. Ещё одна смена — и будет не смешно.",
+      "weight": 9,
+      "cooldownDays": 3,
+      "conditions": ["projectInDev", "hasAssignedStaff"],
+      "choices": [
+        {
+          "id": "home",
+          "label": "Отпустить домой",
+          "hint": "пропустит смену, но оклемается",
+          "requireMoney": false,
+          "effects": [
+            { "type": "stunTarget", "roleId": "", "percent": 0, "points": 0, "amount": 0, "hours": 8, "text": "Человек ушёл. Завтра, может, даже придёт." },
+            { "type": "energyTarget", "roleId": "", "percent": 0, "points": 0, "amount": 40, "hours": 0, "text": "" }
+          ]
+        },
+        {
+          "id": "push",
+          "label": "Ещё одну смену",
+          "hint": "работает дальше, нужды в минус",
+          "requireMoney": false,
+          "effects": [
+            { "type": "energyTarget", "roleId": "", "percent": 0, "points": 0, "amount": -35, "hours": 0, "text": "Остался. Кофемашина уже боится." },
+            { "type": "moodTarget", "roleId": "", "percent": 0, "points": 0, "amount": -28, "hours": 0, "text": "" }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "scope_creep",
+      "displayName": "Раздувание скоупа",
+      "body": "На «{project}» просят «маленькую фичу». Она никогда не бывает маленькой.",
+      "weight": 7,
+      "cooldownDays": 4,
+      "conditions": ["projectInDev", "progressAtLeast:0.2", "hasRole:programmer"],
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Сделать",
+          "hint": "+8 очков программисту",
+          "requireMoney": false,
+          "effects": [
+            { "type": "addWorkPoints", "roleId": "programmer", "percent": 0, "points": 8, "amount": 0, "hours": 0, "text": "Фичу приняли. Программист уже считает, сколько это в ночах." }
+          ]
+        },
+        {
+          "id": "freeze",
+          "label": "Зафиксировать скоуп",
+          "hint": "объём тот же, настроение ниже",
+          "requireMoney": false,
+          "effects": [
+            { "type": "moodAll", "roleId": "", "percent": 0, "points": 0, "amount": -14, "hours": 0, "text": "Скоуп закрыли. Все делают вид, что так и задумано." }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "poach_offer",
+      "displayName": "Оффер со стороны",
+      "body": "{employee} ({role}) принёс оффер. Можно перебить премией или пожать руку на прощание.",
+      "weight": 7,
+      "cooldownDays": 6,
+      "conditions": ["hasAssignedStaff", "employeeCountAtLeast:2"],
+      "choices": [
+        {
+          "id": "bonus",
+          "label": "Дать премию",
+          "hint": "280$  ·  остаётся, настроение вверх",
+          "requireMoney": true,
+          "effects": [
+            { "type": "fine", "roleId": "", "percent": 0, "points": 0, "amount": 280, "hours": 0, "text": "" },
+            { "type": "moodTarget", "roleId": "", "percent": 0, "points": 0, "amount": 35, "hours": 0, "text": "Премия закрыла вопрос. Пока что." }
+          ]
+        },
+        {
+          "id": "letgo",
+          "label": "Отпустить",
+          "hint": "человек уходит из студии",
+          "requireMoney": false,
+          "effects": [
+            { "type": "fireTarget", "roleId": "", "percent": 0, "points": 0, "amount": 0, "hours": 0, "text": "Пожали руки. Стол опустел." }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "pizza_friday",
+      "displayName": "Пицца в офис",
+      "body": "В коридоре пахнет выгоранием. Можно заказать пиццу на всех — или сделать вид, что сегодня день здорового питания.",
+      "weight": 8,
+      "cooldownDays": 4,
+      "conditions": ["hasAssignedStaff"],
+      "choices": [
+        {
+          "id": "order",
+          "label": "Заказать пиццу",
+          "hint": "120$  ·  настроение всем",
+          "requireMoney": true,
+          "effects": [
+            { "type": "fine", "roleId": "", "percent": 0, "points": 0, "amount": 120, "hours": 0, "text": "" },
+            { "type": "moodAll", "roleId": "", "percent": 0, "points": 0, "amount": 28, "hours": 0, "text": "Коробки, салфетки, внезапная любовь к студии." }
+          ]
+        },
+        {
+          "id": "skip",
+          "label": "Не в этот раз",
+          "hint": "бесплатно и без радости",
+          "requireMoney": false,
+          "effects": [
+            { "type": "moodAll", "roleId": "", "percent": 0, "points": 0, "amount": -8, "hours": 0, "text": "Никто не удивлён. Холодильник тоже." }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "coffee_jam",
+      "displayName": "Кофемашина бунтует",
+      "body": "Кофемашина плюётся и мигает. Без неё офис быстро становится злым.",
+      "weight": 8,
+      "cooldownDays": 4,
+      "conditions": ["hasAssignedStaff"],
+      "choices": [
+        {
+          "id": "fix",
+          "label": "Починить",
+          "hint": "90$  ·  кофе снова есть",
+          "requireMoney": true,
+          "effects": [
+            { "type": "fine", "roleId": "", "percent": 0, "points": 0, "amount": 90, "hours": 0, "text": "Мастер покрутил что-то внутри. Пахнет нормально." },
+            { "type": "moodAll", "roleId": "", "percent": 0, "points": 0, "amount": 10, "hours": 0, "text": "" }
+          ]
+        },
+        {
+          "id": "endure",
+          "label": "Терпеть",
+          "hint": "настроение всем вниз",
+          "requireMoney": false,
+          "effects": [
+            { "type": "moodAll", "roleId": "", "percent": 0, "points": 0, "amount": -16, "hours": 0, "text": "Пьют растворимый. Это считается инцидентом." }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "live_ads",
+      "displayName": "Стор режет креативы",
+      "body": "Рекламу «{project}» стор помечает как «вводит в заблуждение». Можно перезалить креатив или пустить как есть.",
+      "weight": 6,
+      "cooldownDays": 5,
+      "conditions": ["hasLiveProject"],
+      "choices": [
+        {
+          "id": "reshoot",
+          "label": "Новый креатив",
+          "hint": "200$  ·  оценка лайва на месте",
+          "requireMoney": true,
+          "effects": [
+            { "type": "fine", "roleId": "", "percent": 0, "points": 0, "amount": 200, "hours": 0, "text": "Креатив перезалился. Выручка пока дышит." }
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Пустить как есть",
+          "hint": "дешевле, лайв просядет",
+          "requireMoney": false,
+          "effects": [
+            { "type": "qualityHit", "roleId": "", "percent": 0.12, "points": 0, "amount": 0, "hours": 0, "text": "Стор крутит объявление хуже. Цифры это чувствуют." }
+          ]
+        }
+      ],
+      "effects": []
+    }
+  ],
+  "firstNames": ["Илья", "Катя", "Артём", "Маша", "Никита", "Оля", "Денис", "Света", "Паша", "Лена", "Тимур", "Аня"],
+  "lastNames": ["Кротов", "Белова", "Шилов", "Орлова", "Макаров", "Сомова", "Гуров", "Павлова", "Репин", "Зайцева"],
+  "projectAdjectives": ["Быстрый", "Ночной", "Тихий", "Яркий", "Косой", "Ломаный", "Скромный", "Громкий"]
+}
