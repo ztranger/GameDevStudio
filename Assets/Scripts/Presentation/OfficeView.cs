@@ -50,6 +50,7 @@ namespace GameDevStudio.Presentation
             _peopleRoot = CreateChild("People");
             BuildRoom();
             BuildProps();
+            Decorate();
             GameEvents.StateChanged += OnStateChanged;
             GameEvents.OfficePicked += OnPicked;
             OnStateChanged();
@@ -165,6 +166,62 @@ namespace GameDevStudio.Presentation
             return PixelArtFactory.CoffeeMachine();
         }
 
+        void Decorate()
+        {
+            int w = _sim.Data.studio.roomTilesX;
+            int h = _sim.Data.studio.roomTilesY;
+            Sprite window = PixelArtFactory.Window();
+            Sprite poster = PixelArtFactory.Poster();
+            Sprite plant = PixelArtFactory.Plant();
+            Sprite rug = PixelArtFactory.Rug();
+            int[] windowX = { 2, 5, 9, 12 };
+            for (int i = 0; i < windowX.Length; i++)
+            {
+                if (window == null)
+                {
+                    break;
+                }
+
+                SpriteRenderer pane = CreateSprite(window, _propRoot, 3);
+                pane.name = "window";
+                pane.transform.position = OfficeGrid.World(w, h, windowX[i], h - 1);
+            }
+
+            if (poster != null)
+            {
+                SpriteRenderer a = CreateSprite(poster, _propRoot, 3);
+                a.transform.position = OfficeGrid.World(w, h, 7, h - 1) + new Vector3(0.15f, -0.05f, 0f);
+                SpriteRenderer b = CreateSprite(poster, _propRoot, 3);
+                b.transform.position = OfficeGrid.World(w, h, 1, h - 1);
+            }
+
+            if (rug != null)
+            {
+                int[] rugX = { 3, 7, 11 };
+                for (int i = 0; i < rugX.Length; i++)
+                {
+                    SpriteRenderer r = CreateSprite(rug, _floorRoot, 1);
+                    r.name = "rug";
+                    r.transform.position = OfficeGrid.World(w, h, rugX[i], 2);
+                    r.color = new Color(1f, 1f, 1f, 0.92f);
+                }
+            }
+
+            if (plant != null)
+            {
+                PlaceProp(plant, 5, 1, 6);
+                PlaceProp(plant, 13, 6, 6);
+            }
+        }
+
+        void PlaceProp(Sprite sprite, int x, int y, int order)
+        {
+            int w = _sim.Data.studio.roomTilesX;
+            int h = _sim.Data.studio.roomTilesY;
+            SpriteRenderer renderer = CreateSprite(sprite, _propRoot, order);
+            renderer.transform.position = OfficeGrid.World(w, h, x, y);
+        }
+
         void OnStateChanged()
         {
             if (_sim == null)
@@ -255,7 +312,7 @@ namespace GameDevStudio.Presentation
             pad.transform.localPosition = new Vector3(0f, 0.15f, 0f);
             var body = CreateSprite(BodySprite(employee), root.transform, 8);
             var marker = CreateSprite(PixelArtFactory.StatusPip(Color.white), root.transform, 12);
-            marker.transform.localPosition = new Vector3(0f, 1.15f, 0f);
+            marker.transform.localPosition = new Vector3(0f, 1.42f, 0f);
             return new PersonView
             {
                 Id = employee.Id,
@@ -295,7 +352,7 @@ namespace GameDevStudio.Presentation
                 PersonView view = pair.Value;
                 Vector3 target = OfficeGrid.World(w, h, employee.TileX, employee.TileY);
                 view.Visual = Vector3.MoveTowards(view.Visual, target, step);
-                view.Root.position = view.Visual;
+                view.Root.position = view.Visual + new Vector3(0f, Bob(employee), 0f);
                 float dx = target.x - view.Visual.x;
                 if (Mathf.Abs(dx) > 0.04f)
                 {
@@ -308,6 +365,18 @@ namespace GameDevStudio.Presentation
                 view.Pad.enabled = _pick.Kind == OfficePickKind.Employee && _pick.EmployeeId == employee.Id;
                 view.Marker.color = MarkerColor(employee.Activity);
             }
+        }
+
+        static float Bob(Employee employee)
+        {
+            if (employee.Activity != EmployeeActivity.Working &&
+                employee.Activity != EmployeeActivity.Managing &&
+                employee.Activity != EmployeeActivity.Idle)
+            {
+                return 0f;
+            }
+
+            return Mathf.Sin(Time.unscaledTime * 2.4f + employee.Id * 1.7f) * 0.03f;
         }
 
         void HandleClick()
@@ -447,13 +516,14 @@ namespace GameDevStudio.Presentation
 
         Sprite BodySprite(Employee employee)
         {
-            string key = employee.RoleId ?? string.Empty;
+            string key = "c" + employee.Id;
             if (_bodySprites.TryGetValue(key, out Sprite sprite))
             {
                 return sprite;
             }
 
-            sprite = PixelArtFactory.Character(ParseColor(_sim.Data.FindRole(employee.RoleId)));
+            int seed = Mathf.Abs(employee.Id);
+            sprite = PixelArtFactory.Character(ParseColor(_sim.Data.FindRole(employee.RoleId)), seed);
             _bodySprites[key] = sprite;
             return sprite;
         }
