@@ -43,7 +43,8 @@ namespace GameDevStudio.UI
             var scaler = go.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 0.5f;
+            scaler.matchWidthOrHeight = 0.62f;
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             return canvas;
         }
 
@@ -139,6 +140,8 @@ namespace GameDevStudio.UI
 
             var scroll = root.GetComponent<ScrollRect>();
             scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Elastic;
+            scroll.scrollSensitivity = 28f;
             scroll.viewport = viewportGo.GetComponent<RectTransform>();
             scroll.content = contentRect;
             Stretch(root.GetComponent<RectTransform>());

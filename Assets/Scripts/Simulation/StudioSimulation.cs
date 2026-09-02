@@ -1184,7 +1184,8 @@ namespace GameDevStudio.Simulation
 
             if (employee == null && project != null)
             {
-                employee = RandomEmployee(e => e.AssignedProjectId == project.Id);
+                int projectId = project.Id;
+                employee = RandomEmployee(e => e.AssignedProjectId == projectId);
             }
 
             if (employee == null)

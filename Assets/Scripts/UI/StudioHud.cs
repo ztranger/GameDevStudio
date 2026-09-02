@@ -41,16 +41,44 @@ namespace GameDevStudio.UI
         public int Speed => _speed;
         public bool Paused { get; private set; }
 
+        public bool HandleBack()
+        {
+            if (_incidentVisible)
+            {
+                return true;
+            }
+
+            if (_modalRoot != null && _modalRoot.childCount > 0)
+            {
+                CloseModals();
+                return true;
+            }
+
+            if (_inspector != null && _inspector.gameObject.activeSelf)
+            {
+                ClearPick();
+                return true;
+            }
+
+            Paused = true;
+            GameEvents.RaiseToast("Пауза");
+            return true;
+        }
+
         public void Bind(StudioSimulation sim)
         {
             _sim = sim;
             Canvas canvas = UiFactory.CreateCanvas(transform);
-            BuildTop(canvas.transform);
-            BuildBottom(canvas.transform);
-            BuildProjects(canvas.transform);
-            BuildInspector(canvas.transform);
+            RectTransform safe = new GameObject("SafeArea", typeof(RectTransform)).GetComponent<RectTransform>();
+            safe.SetParent(canvas.transform, false);
+            UiFactory.Stretch(safe);
+            safe.gameObject.AddComponent<SafeAreaFit>();
+            BuildTop(safe);
+            BuildBottom(safe);
+            BuildProjects(safe);
+            BuildInspector(safe);
             var modalGo = new GameObject("Modals", typeof(RectTransform));
-            modalGo.transform.SetParent(canvas.transform, false);
+            modalGo.transform.SetParent(safe, false);
             _modalRoot = modalGo.GetComponent<RectTransform>();
             UiFactory.Stretch(_modalRoot);
             GameEvents.StateChanged += Refresh;
@@ -100,7 +128,7 @@ namespace GameDevStudio.UI
         void AddSpeedButton(Transform parent, string caption, UnityEngine.Events.UnityAction action)
         {
             Button button = UiFactory.ButtonWidget(parent, caption, action);
-            button.gameObject.AddComponent<LayoutElement>().minWidth = 70f;
+            button.gameObject.AddComponent<LayoutElement>().minWidth = 84f;
         }
 
         void SetSpeed(int value)
@@ -112,7 +140,7 @@ namespace GameDevStudio.UI
         void BuildBottom(Transform canvas)
         {
             RectTransform bar = UiFactory.Panel(canvas, "Bottom", UiFactory.PanelColor);
-            UiFactory.Anchor(bar, Vector2.zero, new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, 96f));
+            UiFactory.Anchor(bar, Vector2.zero, new Vector2(1f, 0f), Vector2.zero, new Vector2(0f, 104f));
             var layout = bar.gameObject.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = 16f;
             layout.padding = new RectOffset(20, 20, 16, 16);
@@ -123,13 +151,13 @@ namespace GameDevStudio.UI
             UiFactory.ButtonWidget(bar, "Найм", OpenHireModal);
             UiFactory.ButtonWidget(bar, "Магазин", OpenShopModal);
             _toast = UiFactory.Label(canvas, string.Empty, 22, TextAnchor.LowerCenter, UiFactory.Muted, "Toast");
-            UiFactory.Anchor(_toast.rectTransform, new Vector2(0.15f, 0f), new Vector2(0.7f, 0f), new Vector2(0f, 104f), new Vector2(0f, 148f));
+            UiFactory.Anchor(_toast.rectTransform, new Vector2(0.15f, 0f), new Vector2(0.7f, 0f), new Vector2(0f, 112f), new Vector2(0f, 156f));
         }
 
         void BuildProjects(Transform canvas)
         {
             RectTransform panel = UiFactory.Panel(canvas, "Projects", UiFactory.PanelColor);
-            UiFactory.Anchor(panel, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-430f, 108f), new Vector2(-16f, -84f));
+            UiFactory.Anchor(panel, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(-430f, 116f), new Vector2(-16f, -84f));
             Text title = UiFactory.Label(panel, "Проекты", 24, TextAnchor.MiddleLeft);
             UiFactory.Anchor(title.rectTransform, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(16f, -48f), new Vector2(-16f, -8f));
             RectTransform scrollHost = UiFactory.Panel(panel, "Host", Color.clear);

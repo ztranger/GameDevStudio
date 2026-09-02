@@ -340,7 +340,9 @@ namespace GameDevStudio.Presentation
 
         OfficePick RayPick(Vector3 world)
         {
-            float best = 0.7f;
+            float personRadius = Touchscreen.current != null ? 1.15f : 0.7f;
+            float propRadius = Touchscreen.current != null ? 1.25f : 0.85f;
+            float best = personRadius;
             Employee bestEmployee = null;
             for (int i = 0; i < _sim.State.Employees.Count; i++)
             {
@@ -363,7 +365,7 @@ namespace GameDevStudio.Presentation
                 return new OfficePick { Kind = OfficePickKind.Employee, EmployeeId = bestEmployee.Id };
             }
 
-            best = 0.85f;
+            best = propRadius;
             DeskSlot bestDesk = null;
             for (int i = 0; i < _sim.State.Desks.Count; i++)
             {
@@ -386,7 +388,7 @@ namespace GameDevStudio.Presentation
                 return new OfficePick { Kind = OfficePickKind.Desk, DeskId = bestDesk.Id, EmployeeId = bestDesk.OccupiedByEmployeeId };
             }
 
-            best = 0.85f;
+            best = propRadius;
             Facility bestFacility = null;
             int w = _sim.Data.studio.roomTilesX;
             int h = _sim.Data.studio.roomTilesY;
@@ -413,6 +415,13 @@ namespace GameDevStudio.Presentation
         static bool WasPrimaryClick(out Vector2 screen)
         {
             screen = Vector2.zero;
+            Touchscreen touch = Touchscreen.current;
+            if (touch != null && touch.primaryTouch.press.wasPressedThisFrame)
+            {
+                screen = touch.primaryTouch.position.ReadValue();
+                return true;
+            }
+
             if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             {
                 screen = Mouse.current.position.ReadValue();
